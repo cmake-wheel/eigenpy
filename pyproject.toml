@@ -1,6 +1,6 @@
 [project]
 name = "eigenpy"
-version = "2.7.10"
+version = "2.7.14"
 description = "Bindings between Numpy and Eigen using Boost.Python"
 readme = "README.md"
 license= "BSD-2-Clause"
