@@ -37,7 +37,9 @@ set_target_properties(
              LIBRARY_OUTPUT_DIRECTORY
              "${CMAKE_BINARY_DIR}/python/${PROJECT_NAME}")
 
-if(UNIX AND NOT APPLE)
+if(APPLE)
+  set_target_properties(${PYWRAP} PROPERTIES INSTALL_RPATH "@loader_path/../../..")
+elseif(UNIX)
   set_target_properties(${PYWRAP} PROPERTIES INSTALL_RPATH "\$ORIGIN/../../..")
 endif()
 
