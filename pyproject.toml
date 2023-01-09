@@ -1,6 +1,6 @@
 [project]
 name = "eigenpy"
-version = "2.8.1"
+version = "2.9.0"
 description = "Bindings between Numpy and Eigen using Boost.Python"
 readme = "README.md"
 license= "BSD-2-Clause"
@@ -11,5 +11,5 @@ requires-python = ">= 3.7"
 homepage = "https://github.com/stack-of-tasks/eigenpy"
 
 [build-system]
-requires = ["cmeel[build]", "numpy", "cmeel-eigen", "cmeel-boost"]
 build-backend = "cmeel.build"
+requires = ["cmeel[build]", "numpy", "cmeel-eigen", "cmeel-boost"]
