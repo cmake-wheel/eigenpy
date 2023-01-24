@@ -11,9 +11,8 @@ requires-python = ">= 3.7"
 homepage = "https://github.com/stack-of-tasks/eigenpy"
 
 [tool.cmeel]
-build-number = 1
+build-number = 2
 
 [build-system]
-requires = ["cmeel[build]", "numpy", "cmeel-eigen", "cmeel-boost"]
 build-backend = "cmeel.build"
-build-number = 1
+requires = ["cmeel[build]", "numpy", "cmeel-eigen", "cmeel-boost"]
