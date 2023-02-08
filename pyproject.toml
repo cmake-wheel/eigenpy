@@ -12,6 +12,7 @@ homepage = "https://github.com/stack-of-tasks/eigenpy"
 
 [tool.cmeel]
 build-number = 2
+run-tests = false
 
 [build-system]
 build-backend = "cmeel.build"
