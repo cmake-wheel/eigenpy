@@ -16,4 +16,4 @@ run-tests = false
 
 [build-system]
 build-backend = "cmeel.build"
-requires = ["cmeel[build]", "numpy", "cmeel-eigen", "cmeel-boost"]
+requires = ["cmeel[build]", "cmeel-eigen", "cmeel-boost"]
