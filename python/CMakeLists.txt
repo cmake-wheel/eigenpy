@@ -43,10 +43,10 @@ set_target_properties(
              RUNTIME_OUTPUT_DIRECTORY_<CONFIG>
              "${CMAKE_BINARY_DIR}/python/${PROJECT_NAME}")
 
-if(APPLE)
-  set_target_properties(${PYWRAP} PROPERTIES INSTALL_RPATH "@loader_path/../../..")
-elseif(UNIX)
-  set_target_properties(${PYWRAP} PROPERTIES INSTALL_RPATH "\$ORIGIN/../../..")
+if(UNIX)
+  get_relative_rpath(${${PYWRAP}_INSTALL_DIR} ${PYWRAP}_INSTALL_RPATH)
+  set_target_properties(${PYWRAP} PROPERTIES INSTALL_RPATH
+                                             "${${PYWRAP}_INSTALL_RPATH}")
 endif()
 
 install(TARGETS ${PYWRAP} DESTINATION ${${PYWRAP}_INSTALL_DIR})
@@ -56,7 +56,7 @@ if(GENERATE_PYTHON_STUBS)
   load_stubgen()
 
   generate_stubs(${CMAKE_CURRENT_BINARY_DIR} ${PROJECT_NAME}
-                 ${ABSOLUTE_PYTHON_SITELIB})
+                 ${ABSOLUTE_PYTHON_SITELIB} ${PYWRAP})
 endif(GENERATE_PYTHON_STUBS)
 
 # --- INSTALL SCRIPTS
