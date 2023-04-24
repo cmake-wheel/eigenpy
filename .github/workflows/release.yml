@@ -25,11 +25,17 @@ jobs:
             os: "ubuntu-latest"
             build: "cp39-manylinux*"
           - arch: "aarch64"
-            os: "ubuntu-latest"
             build: "cp310-manylinux*"
           - arch: "aarch64"
             os: "ubuntu-latest"
             build: "cp311-manylinux*"
+        exclude:
+          - arch: "x86_64"
+            os: "macos-10.15"
+            build: "pp37-*"
+          - arch: "x86_64"
+            os: "macos-10.15"
+            build: "pp39-*"
     steps:
       - uses: actions/checkout@v3
         with:
