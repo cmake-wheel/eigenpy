@@ -23,6 +23,10 @@ jobs:
           python -m pip install -U wheel
       - name: build cmeel wheel
         run: python -m pip wheel -w wh .
+        env:
+          CMEEL_JOBS: 1
+          CMEEL_TEST_JOBS: 1
+          CMEEL_LOG_LEVEL: DEBUG
       - uses: actions/upload-artifact@v3
         with:
           path: wh
