@@ -5,10 +5,10 @@ on: ["push", "pull_request"]
 jobs:
   build:
     name: "Build python ${{ matrix.python }} on ${{ matrix.os }}"
-    runs-on: "${{ matrix.os }}-latest"
+    runs-on: "${{ matrix.os }}"
     strategy:
       matrix:
-        os: ["ubuntu", "macos"]
+        os: ["ubuntu-latest", "macos-10.15"]
         python: ["3.7", "3.10"]
     steps:
       - uses: actions/checkout@v3
