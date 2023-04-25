@@ -44,7 +44,8 @@ set_target_properties(
              "${CMAKE_BINARY_DIR}/python/${PROJECT_NAME}")
 
 if(APPLE)
-  set_target_properties(${PYWRAP} PROPERTIES INSTALL_RPATH "@loader_path/../../..")
+  set_target_properties(${PYWRAP} PROPERTIES INSTALL_RPATH
+                                             "@loader_path/../../..")
 elseif(UNIX)
   set_target_properties(${PYWRAP} PROPERTIES INSTALL_RPATH "\$ORIGIN/../../..")
 endif()
