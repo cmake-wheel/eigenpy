@@ -25,6 +25,7 @@ jobs:
             os: "ubuntu-latest"
             build: "cp39-manylinux*"
           - arch: "aarch64"
+            os: "ubuntu-latest"
             build: "cp310-manylinux*"
           - arch: "aarch64"
             os: "ubuntu-latest"
