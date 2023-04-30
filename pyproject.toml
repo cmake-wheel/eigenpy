@@ -15,6 +15,7 @@ homepage = "https://github.com/stack-of-tasks/eigenpy"
 
 [tool.cmeel]
 build-number = 4
+configure-args = ["-DGENERATE_PYTHON_STUBS=ON"]
 run-tests = false
 
 [tool.tomlsort]
