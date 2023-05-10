@@ -1,13 +1,13 @@
 [build-system]
 build-backend = "cmeel.build"
-requires = ["cmeel-boost<1.82.0", "cmeel-eigen", "cmeel[build]"]
+requires = ["cmeel-boost < 1.83.0", "cmeel-eigen", "cmeel[build]"]
 
 [project]
-dependencies = ["cmeel-boost<1.82.0"]
+dependencies = ["cmeel-boost < 1.83.0"]
 description = "Bindings between Numpy and Eigen using Boost.Python"
 license = "BSD-2-Clause"
 name = "eigenpy"
-requires-python = ">= 3.7"
+requires-python = ">= 3.8"
 version = "3.0.0"
 
 [project.urls]
