@@ -59,6 +59,8 @@ jobs:
       - name: install wheel
         run: python -m pip install -i "file:///${{ github.workspace }}/artifact" eigenpy
       - name: test
-        run: python -c "import eigenpy; assert abs(eigenpy.Quaternion(1, 2, 3, 4).norm() - 5.47722557505) < 1e-7"
+        run: >
+          python -c "import eigenpy;
+          assert abs(eigenpy.Quaternion(1, 2, 3, 4).norm() - 5.47722557505) < 1e-7"
         env:
           PYTHONWARNINGS: error
