@@ -1,9 +1,9 @@
-EigenPy — Efficient Python bindings between Numpy/Eigen
+EigenPy — Versatile and efficient Python bindings between Numpy and Eigen
 ======
 
 <p align="center">
   <a href="https://opensource.org/licenses/BSD-2-Clause"><img src="https://img.shields.io/badge/License-BSD%202--Clause-green.svg" alt="License"/></a>
-  <a href="https://travis-ci.org/stack-of-tasks/eigenpy"><img src="https://travis-ci.org/stack-of-tasks/eigenpy.svg?branch=master" alt="Build Status"/></a>
+  <a href="https://github.com/stack-of-tasks/eigenpy/workflows/linux.yml"><img alt="Build Status" src="https://github.com/stack-of-tasks/eigenpy/actions/workflows/linux.yml/badge.svg?branch=devel" /></a>
   <a href="https://anaconda.org/conda-forge/eigenpy"><img src="https://img.shields.io/conda/dn/conda-forge/eigenpy.svg" alt="Conda Downloads"/></a>
   <a href="https://anaconda.org/conda-forge/eigenpy"><img src="https://img.shields.io/conda/vn/conda-forge/eigenpy.svg" alt="Conda Version"/></a>
   <a href="https://badge.fury.io/py/eigenpy"><img src="https://badge.fury.io/py/eigenpy.svg" alt="PyPI version"></a>
@@ -21,6 +21,7 @@ EigenPy — Efficient Python bindings between Numpy/Eigen
  - full support of SWIG objects
  - full support of runtime declaration of Numpy scalar types
  - extended API to expose std::vector types
+ - full support of vectorization between C++ and Python (all the hold objects are properly aligned in memory)
 
 ## Setup
 
