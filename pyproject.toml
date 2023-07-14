@@ -14,6 +14,7 @@ version = "3.1.0"
 homepage = "https://github.com/stack-of-tasks/eigenpy"
 
 [tool.cmeel]
+build-number = 1
 run-tests = false
 
 [tool.tomlsort]
