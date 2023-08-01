@@ -8,13 +8,12 @@ description = "Bindings between Numpy and Eigen using Boost.Python"
 license = "BSD-2-Clause"
 name = "eigenpy"
 requires-python = ">= 3.8"
-version = "3.1.0"
+version = "3.1.1"
 
 [project.urls]
 homepage = "https://github.com/stack-of-tasks/eigenpy"
 
 [tool.cmeel]
-build-number = 2
 run-tests = false
 
 [tool.tomlsort]
