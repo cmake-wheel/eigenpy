@@ -12,7 +12,8 @@ version = "3.1.4"
 
 [project.urls]
 changelog = "https://github.com/stack-of-tasks/eigenpy/blob/master/CHANGELOG.md"
-homepage = "https://github.com/stack-of-tasks/eigenpy"
+homepage = "https://github.com/cmake-wheel/eigenpy"
+upstream = "https://github.com/stack-of-tasks/eigenpy"
 
 [tool.cmeel]
 run-tests = false
