@@ -162,7 +162,9 @@ set(${PROJECT_NAME}_HEADERS
     include/eigenpy/user-type.hpp
     include/eigenpy/ufunc.hpp
     include/eigenpy/register.hpp
+    include/eigenpy/std-array.hpp
     include/eigenpy/std-map.hpp
+    include/eigenpy/std-pair.hpp
     include/eigenpy/std-vector.hpp
     include/eigenpy/optional.hpp
     include/eigenpy/pickle-vector.hpp
