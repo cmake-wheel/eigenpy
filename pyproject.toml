@@ -18,5 +18,14 @@ upstream = "https://github.com/stack-of-tasks/eigenpy"
 [tool.cmeel]
 run-tests = false
 
+[tool.ruff]
+extend-exclude = ["cmake"]
+
+[tool.ruff.lint]
+extend-select = ["I", "NPY", "RUF", "UP", "W"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["eigenpy"]
+
 [tool.tomlsort]
 all = true

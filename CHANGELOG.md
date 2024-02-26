@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [3.4.0] - 2024-02-26
+
+### Added
+- Support for `Eigen::SparseMatrix` types ([#426](https://github.com/stack-of-tasks/eigenpy/pull/426))
+- Support for `boost::variant` types with `VariantConverter` ([#430](https://github.com/stack-of-tasks/eigenpy/pull/430))
+- Support for `std::variant` types with `VariantConverter` ([#431](https://github.com/stack-of-tasks/eigenpy/pull/431))
+- Support for `std::unique_ptr` as a return types with `StdUniquePtrCallPolicies` and `boost::python::default_call_policies` ([#433](https://github.com/stack-of-tasks/eigenpy/pull/433))
+- Support for `std::unique_ptr` as an internal reference with `ReturnInternalStdUniquePtr` ([#433](https://github.com/stack-of-tasks/eigenpy/pull/433))
+- Support for `Eigen::Simplicial{LLT,LDLT}` and `Eigen::Cholmod{Simplicial,Supernodal}{LLT,LDLT}` Cholesky de compositions ([#438](https://github.com/stack-of-tasks/eigenpy/pull/438))
+- Switch to ruff for lints, format, and import sort ([#441](https://github.com/stack-of-tasks/eigenpy/pull/441))
+
+### Fixed
+- Fix the issue of missing exposition of Eigen types with __int64 scalar type ([#426](https://github.com/stack-of-tasks/eigenpy/pull/426))
+- Fix namespace use in unittest/std_pair.cpp ([#429](https://github.com/stack-of-tasks/eigenpy/pull/429))
+- Fix case of zero-size sparse matrices ([#437](https://github.com/stack-of-tasks/eigenpy/pull/437))
+
 ## [3.3.0] - 2024-01-23
 
 ### Fixed
@@ -586,7 +602,8 @@ One can now easily expose C++ struct containing Eigen objects in Python avoiding
 
 ## [1.0.0] - 2014-07-18
 
-[Unreleased]: https://github.com/stack-of-tasks/eigenpy/compare/v3.3.0...HEAD
+[Unreleased]: https://github.com/stack-of-tasks/eigenpy/compare/v3.4.0...HEAD
+[3.4.0]: https://github.com/stack-of-tasks/eigenpy/compare/v3.3.0...v3.4.0
 [3.3.0]: https://github.com/stack-of-tasks/eigenpy/compare/v3.2.0...v3.3.0
 [3.2.0]: https://github.com/stack-of-tasks/eigenpy/compare/v3.1.4...v3.2.0
 [3.1.4]: https://github.com/stack-of-tasks/eigenpy/compare/v3.1.3...v3.1.4

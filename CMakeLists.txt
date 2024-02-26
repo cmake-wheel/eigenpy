@@ -41,15 +41,8 @@ set(CMAKE_VERBOSE_MAKEFILE True)
 # ----------------------------------------------------
 option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
 option(SUFFIX_SO_VERSION "Suffix library name with its version" OFF)
-
-if(DEFINED BUILD_UNIT_TESTS)
-  message(
-    AUTHOR_WARNING
-      "BUILD_UNIT_TESTS is deprecated. Use BUILD_TESTING instead.\
-    If you are manually building EigenPy from source in an existing build folder,\
-    we suggest that you delete your build folder and make a new one.")
-  set(BUILD_TESTING ${BUILD_UNIT_TESTS})
-endif(DEFINED BUILD_UNIT_TESTS)
+option(BUILD_TESTING_SCIPY
+       "Build the SciPy tests (scipy should be installed on the machine)" OFF)
 
 include("${JRL_CMAKE_MODULES}/base.cmake")
 compute_project_args(PROJECT_ARGS LANGUAGES CXX)
@@ -62,6 +55,15 @@ include("${JRL_CMAKE_MODULES}/apple.cmake")
 
 option(GENERATE_PYTHON_STUBS
        "Generate the Python stubs associated to the Python library" OFF)
+
+option(BUILD_WITH_CHOLMOD_SUPPORT "Build EigenPy with the Cholmod support" OFF)
+
+if(APPLE)
+  option(BUILD_WITH_ACCELERATE_SUPPORT
+         "Build EigenPy with the Accelerate support" OFF)
+else(APPLE)
+  set(BUILD_WITH_ACCELERATE_SUPPORT FALSE)
+endif(APPLE)
 
 string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 
@@ -106,12 +108,42 @@ export_boost_default_options()
 find_package(Boost REQUIRED)
 search_for_boost_python(REQUIRED)
 
+if(BUILD_WITH_CHOLMOD_SUPPORT)
+  set(CMAKE_MODULE_PATH ${JRL_CMAKE_MODULES}/find-external/CHOLMOD
+                        ${CMAKE_MODULE_PATH})
+  add_project_dependency(CHOLMOD REQUIRED FIND_EXTERNAL "CHOLMOD")
+  message(
+    STATUS
+      "Build with CHOLDOD support (LGPL). See CHOLMOD/Doc/License.txt for further details."
+  )
+  add_definitions(-DEIGENPY_WITH_CHOLMOD_SUPPORT)
+endif(BUILD_WITH_CHOLMOD_SUPPORT)
+
+if(BUILD_WITH_ACCELERATE_SUPPORT)
+  if(NOT ${Eigen3_VERSION} VERSION_GREATER_EQUAL "3.4.90")
+    message(
+      FATAL_ERROR
+        "Your version of Eigen is too low. Should be at least 3.4.90. Current version is ${Eigen3_VERSION}."
+    )
+  endif()
+
+  set(CMAKE_MODULE_PATH ${JRL_CMAKE_MODULES}/find-external/Accelerate
+                        ${CMAKE_MODULE_PATH})
+  find_package(
+    Accelerate REQUIRED # FIND_EXTERNAL "Accelerate" # We don't export yet as
+                        # there might be an issue on AMR64 platforms
+  )
+  message(STATUS "Build with Accelerate support framework.")
+  add_definitions(-DEIGENPY_WITH_ACCELERATE_SUPPORT)
+endif(BUILD_WITH_ACCELERATE_SUPPORT)
+
 # ----------------------------------------------------
 # --- INCLUDE ----------------------------------------
 # ----------------------------------------------------
 set(${PROJECT_NAME}_UTILS_HEADERS
     include/eigenpy/utils/scalar-name.hpp include/eigenpy/utils/is-approx.hpp
-    include/eigenpy/utils/is-aligned.hpp)
+    include/eigenpy/utils/is-aligned.hpp include/eigenpy/utils/traits.hpp
+    include/eigenpy/utils/python-compat.hpp)
 
 set(${PROJECT_NAME}_SOLVERS_HEADERS
     include/eigenpy/solvers/solvers.hpp
@@ -123,9 +155,39 @@ set(${PROJECT_NAME}_SOLVERS_HEADERS
     include/eigenpy/solvers/BasicPreconditioners.hpp
     include/eigenpy/solvers/BFGSPreconditioners.hpp)
 
+set(${PROJECT_NAME}_EIGEN_HEADERS include/eigenpy/eigen/EigenBase.hpp)
+
+set(${PROJECT_NAME}_DECOMPOSITIONS_SPARSE_CHOLMOD_HEADERS
+    include/eigenpy/decompositions/sparse/cholmod/CholmodBase.hpp
+    include/eigenpy/decompositions/sparse/cholmod/CholmodDecomposition.hpp
+    include/eigenpy/decompositions/sparse/cholmod/CholmodSimplicialLDLT.hpp
+    include/eigenpy/decompositions/sparse/cholmod/CholmodSimplicialLLT.hpp
+    include/eigenpy/decompositions/sparse/cholmod/CholmodSupernodalLLT.hpp)
+
+set(${PROJECT_NAME}_DECOMPOSITIONS_SPARSE_ACCELERATE_HEADERS
+    include/eigenpy/decompositions/sparse/accelerate/accelerate.hpp)
+
+set(${PROJECT_NAME}_DECOMPOSITIONS_SPARSE_HEADERS
+    include/eigenpy/decompositions/sparse/LLT.hpp
+    include/eigenpy/decompositions/sparse/LDLT.hpp
+    include/eigenpy/decompositions/sparse/SimplicialCholesky.hpp
+    include/eigenpy/decompositions/sparse/SparseSolverBase.hpp)
+
+if(BUILD_WITH_CHOLMOD_SUPPORT)
+  list(APPEND ${PROJECT_NAME}_DECOMPOSITIONS_SPARSE_HEADERS
+       ${${PROJECT_NAME}_DECOMPOSITIONS_SPARSE_CHOLMOD_HEADERS})
+endif(BUILD_WITH_CHOLMOD_SUPPORT)
+
+if(BUILD_WITH_ACCELERATE_SUPPORT)
+  list(APPEND ${PROJECT_NAME}_DECOMPOSITIONS_SPARSE_HEADERS
+       ${${PROJECT_NAME}_DECOMPOSITIONS_SPARSE_ACCELERATE_HEADERS})
+endif(BUILD_WITH_ACCELERATE_SUPPORT)
+
 set(${PROJECT_NAME}_DECOMPOSITIONS_HEADERS
+    ${${PROJECT_NAME}_DECOMPOSITIONS_SPARSE_HEADERS}
     include/eigenpy/decompositions/decompositions.hpp
     include/eigenpy/decompositions/EigenSolver.hpp
+    include/eigenpy/decompositions/PermutationMatrix.hpp
     include/eigenpy/decompositions/LDLT.hpp
     include/eigenpy/decompositions/LLT.hpp
     include/eigenpy/decompositions/SelfAdjointEigenSolver.hpp
@@ -134,6 +196,7 @@ set(${PROJECT_NAME}_DECOMPOSITIONS_HEADERS
 set(${PROJECT_NAME}_HEADERS
     ${${PROJECT_NAME}_UTILS_HEADERS}
     ${${PROJECT_NAME}_SOLVERS_HEADERS}
+    ${${PROJECT_NAME}_EIGEN_HEADERS}
     ${${PROJECT_NAME}_DECOMPOSITIONS_HEADERS}
     include/eigenpy/alignment.hpp
     include/eigenpy/computation-info.hpp
@@ -170,6 +233,11 @@ set(${PROJECT_NAME}_HEADERS
     include/eigenpy/pickle-vector.hpp
     include/eigenpy/stride.hpp
     include/eigenpy/tensor/eigen-from-python.hpp
+    include/eigenpy/sparse/eigen-from-python.hpp
+    include/eigenpy/scipy-allocator.hpp
+    include/eigenpy/scipy-type.hpp
+    include/eigenpy/variant.hpp
+    include/eigenpy/std-unique-ptr.hpp
     include/eigenpy/swig.hpp
     include/eigenpy/version.hpp)
 
@@ -188,6 +256,16 @@ set(${PROJECT_NAME}_SOLVERS_SOURCES src/solvers/preconditioners.cpp
 
 set(${PROJECT_NAME}_DECOMPOSITIONS_SOURCES
     src/decompositions/decompositions.cpp)
+
+if(BUILD_WITH_CHOLMOD_SUPPORT)
+  list(APPEND ${PROJECT_NAME}_DECOMPOSITIONS_SOURCES
+       src/decompositions/cholmod.cpp)
+endif(BUILD_WITH_CHOLMOD_SUPPORT)
+
+if(BUILD_WITH_ACCELERATE_SUPPORT)
+  list(APPEND ${PROJECT_NAME}_DECOMPOSITIONS_SOURCES
+       src/decompositions/accelerate.cpp)
+endif(BUILD_WITH_ACCELERATE_SUPPORT)
 
 set(${PROJECT_NAME}_SOURCES
     ${${PROJECT_NAME}_SOLVERS_SOURCES}
@@ -209,6 +287,7 @@ set(${PROJECT_NAME}_SOURCES
     src/angle-axis.cpp
     src/quaternion.cpp
     src/geometry-conversion.cpp
+    src/scipy-type.cpp
     src/std-vector.cpp
     src/optional.cpp
     src/version.cpp)
@@ -238,6 +317,19 @@ modernize_target_link_libraries(
   INCLUDE_DIRS
   ${NUMPY_INCLUDE_DIRS}
   ${PYTHON_INCLUDE_DIR})
+
+# Links against CholMod
+if(BUILD_WITH_CHOLMOD_SUPPORT)
+  modernize_target_link_libraries(${PROJECT_NAME} SCOPE PUBLIC TARGETS
+                                  CHOLMOD::CHOLMOD)
+endif(BUILD_WITH_CHOLMOD_SUPPORT)
+
+# Links against accelerate
+if(BUILD_WITH_ACCELERATE_SUPPORT)
+  # modernize_target_link_libraries(${PROJECT_NAME} SCOPE PUBLIC TARGETS
+  # Accelerate)
+  target_link_libraries(${PROJECT_NAME} PRIVATE "-framework accelerate")
+endif(BUILD_WITH_ACCELERATE_SUPPORT)
 
 if(SUFFIX_SO_VERSION)
   set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION})

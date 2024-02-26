@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014-2019 CNRS Copyright (c) 2018-2023 INRIA
+# Copyright (c) 2014-2019 CNRS Copyright (c) 2018-2024 INRIA
 #
 
 macro(ADD_LIB_UNIT_TEST test)
@@ -24,7 +24,12 @@ macro(ADD_LIB_UNIT_TEST test)
   endif(NOT BUILD_TESTING)
 endmacro(ADD_LIB_UNIT_TEST)
 
+add_dependencies(build_tests ${PYWRAP})
 add_lib_unit_test(matrix)
+if(BUILD_TESTING_SCIPY)
+  find_scipy()
+  add_lib_unit_test(sparse_matrix)
+endif()
 add_lib_unit_test(tensor)
 add_lib_unit_test(geometry)
 add_lib_unit_test(complex)
@@ -41,23 +46,34 @@ add_lib_unit_test(std_vector)
 add_lib_unit_test(std_array)
 add_lib_unit_test(std_pair)
 add_lib_unit_test(user_struct)
+add_lib_unit_test(std_unique_ptr)
 
-function(config_bind_optional tagname opttype)
-  set(MODNAME bind_optional_${tagname})
-  set(OPTIONAL ${opttype})
-  configure_file(bind_optional.cpp.in ${MODNAME}.cpp)
+function(config_test test tagname opttype)
+  set(MODNAME ${test}_${tagname})
+  set(TEST_TYPE ${opttype})
+  configure_file(${test}.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/${MODNAME}.cpp)
 
-  set(py_file test_optional_${tagname}.py)
-  configure_file(python/test_optional.py.in
+  set(py_file test_${test}_${tagname}.py)
+  configure_file(python/test_${test}.py.in
                  ${CMAKE_CURRENT_BINARY_DIR}/python/${py_file})
   add_lib_unit_test(${MODNAME})
-  add_python_unit_test("py-optional-${tagname}" "unittest/python/${py_file}"
-                       "unittest")
+  set(PYTHON_TEST_NAME "py-${test}-${tagname}")
+  add_test(NAME ${PYTHON_TEST_NAME}
+           COMMAND ${PYTHON_EXECUTABLE}
+                   "${CMAKE_CURRENT_BINARY_DIR}/python/${py_file}")
+  compute_pythonpath(ENV_VARIABLES "unittest")
+  set_tests_properties(${PYTHON_TEST_NAME} PROPERTIES ENVIRONMENT
+                                                      "${ENV_VARIABLES}")
 endfunction()
 
-config_bind_optional(boost "boost::optional")
+config_test(variant boost "boost::variant")
 if(CMAKE_CXX_STANDARD GREATER 14 AND CMAKE_CXX_STANDARD LESS 98)
-  config_bind_optional(std "std::optional")
+  config_test(variant std "std::variant")
+endif()
+
+config_test(bind_optional boost "boost::optional")
+if(CMAKE_CXX_STANDARD GREATER 14 AND CMAKE_CXX_STANDARD LESS 98)
+  config_test(bind_optional std "std::optional")
 endif()
 
 add_lib_unit_test(bind_virtual_factory)
@@ -113,17 +129,53 @@ add_python_unit_test("py-std-vector" "unittest/python/test_std_vector.py"
 set_tests_properties("py-std-vector" PROPERTIES DEPENDS ${PYWRAP})
 
 add_python_unit_test("py-std-array" "unittest/python/test_std_array.py"
-                     "python;unittest")
-set_tests_properties("py-std-array" PROPERTIES DEPENDS ${PYWRAP})
+                     "unittest")
 
 add_python_unit_test("py-std-pair" "unittest/python/test_std_pair.py"
                      "unittest")
-set_tests_properties("py-std-pair" PROPERTIES DEPENDS ${PYWRAP})
 
 add_python_unit_test("py-user-struct" "unittest/python/test_user_struct.py"
-                     "python;unittest")
-set_tests_properties("py-user-struct" PROPERTIES DEPENDS ${PYWRAP})
+                     "unittest")
+
+add_python_unit_test("py-std-unique-ptr"
+                     "unittest/python/test_std_unique_ptr.py" "unittest")
 
 add_python_unit_test("py-bind-virtual" "unittest/python/test_bind_virtual.py"
-                     "python;unittest")
-set_tests_properties("py-bind-virtual" PROPERTIES DEPENDS ${PYWRAP})
+                     "unittest")
+
+if(BUILD_TESTING_SCIPY)
+  add_python_unit_test("py-sparse-matrix"
+                       "unittest/python/test_sparse_matrix.py" "unittest")
+
+  add_python_unit_test(
+    "py-SimplicialLLT"
+    "unittest/python/decompositions/sparse/test_SimplicialLLT.py" "python")
+  add_python_unit_test(
+    "py-SimplicialLDLT"
+    "unittest/python/decompositions/sparse/test_SimplicialLDLT.py" "python")
+
+  if(BUILD_WITH_CHOLMOD_SUPPORT)
+
+    add_python_unit_test(
+      "py-CholmodSimplicialLLT"
+      "unittest/python/decompositions/sparse/cholmod/test_CholmodSimplicialLLT.py"
+      "python")
+
+    add_python_unit_test(
+      "py-CholmodSimplicialLDLT"
+      "unittest/python/decompositions/sparse/cholmod/test_CholmodSimplicialLDLT.py"
+      "python")
+
+    add_python_unit_test(
+      "py-CholmodSupernodalLLT"
+      "unittest/python/decompositions/sparse/cholmod/test_CholmodSupernodalLLT.py"
+      "python")
+
+  endif(BUILD_WITH_CHOLMOD_SUPPORT)
+
+  if(BUILD_WITH_ACCELERATE_SUPPORT)
+    add_python_unit_test(
+      "py-Accelerate"
+      "unittest/python/decompositions/sparse/test_Accelerate.py" "python")
+  endif(BUILD_WITH_ACCELERATE_SUPPORT)
+endif()
