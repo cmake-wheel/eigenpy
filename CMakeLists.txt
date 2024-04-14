@@ -14,11 +14,23 @@ set(PROJECT_COMPATIBILITY_VERSION AnyNewerVersion)
 
 # Check if the submodule cmake have been initialized
 set(JRL_CMAKE_MODULES "${CMAKE_CURRENT_LIST_DIR}/cmake")
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/cmake/base.cmake")
-  if(${CMAKE_VERSION} VERSION_LESS "3.14.0")
+if(EXISTS "${JRL_CMAKE_MODULES}/base.cmake")
+  message(STATUS "JRL cmakemodules found in 'cmake/' git submodule")
+else()
+  find_package(jrl-cmakemodules QUIET CONFIG)
+  if(jrl-cmakemodules_FOUND)
+    get_property(
+      JRL_CMAKE_MODULES
+      TARGET jrl-cmakemodules::jrl-cmakemodules
+      PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+    message(STATUS "JRL cmakemodules found on system at ${JRL_CMAKE_MODULES}")
+  elseif(${CMAKE_VERSION} VERSION_LESS "3.14.0")
     message(
       FATAL_ERROR
-        "\nPlease run the following command first:\ngit submodule update --init\n"
+        "\nCan't find jrl-cmakemodules. Please either:\n"
+        "  - use git submodule: 'git submodule update --init'\n"
+        "  - or install https://github.com/jrl-umi3218/jrl-cmakemodules\n"
+        "  - or upgrade your CMake version to >= 3.14 to allow automatic fetching\n"
     )
   else()
     message(STATUS "JRL cmakemodules not found. Let's fetch it.")
@@ -31,6 +43,14 @@ if(NOT EXISTS "${CMAKE_SOURCE_DIR}/cmake/base.cmake")
   endif()
 endif()
 
+function(set_standard_output_directory target)
+  set_target_properties(
+    ${target}
+    PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin
+               LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib
+               ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+endfunction()
+
 # Disable -Werror on Unix for now.
 set(CXX_DISABLE_WERROR True)
 set(CMAKE_VERBOSE_MAKEFILE True)
@@ -42,7 +62,7 @@ set(CMAKE_VERBOSE_MAKEFILE True)
 option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
 option(SUFFIX_SO_VERSION "Suffix library name with its version" OFF)
 option(BUILD_TESTING_SCIPY
-       "Build the SciPy tests (scipy should be installed on the machine)" OFF)
+       "Build the SciPy tests (scipy should be installed on the machine)" ON)
 
 include("${JRL_CMAKE_MODULES}/base.cmake")
 compute_project_args(PROJECT_ARGS LANGUAGES CXX)
@@ -255,7 +275,16 @@ set(${PROJECT_NAME}_SOLVERS_SOURCES src/solvers/preconditioners.cpp
                                     src/solvers/solvers.cpp)
 
 set(${PROJECT_NAME}_DECOMPOSITIONS_SOURCES
-    src/decompositions/decompositions.cpp)
+    src/decompositions/decompositions.cpp
+    src/decompositions/eigen-solver.cpp
+    src/decompositions/llt-solver.cpp
+    src/decompositions/ldlt-solver.cpp
+    src/decompositions/minres-solver.cpp
+    src/decompositions/eigen-solver.cpp
+    src/decompositions/self-adjoint-eigen-solver.cpp
+    src/decompositions/permutation-matrix.cpp
+    src/decompositions/simplicial-llt-solver.cpp
+    src/decompositions/simplicial-ldlt-solver.cpp)
 
 if(BUILD_WITH_CHOLMOD_SUPPORT)
   list(APPEND ${PROJECT_NAME}_DECOMPOSITIONS_SOURCES
@@ -282,8 +311,21 @@ set(${PROJECT_NAME}_SOURCES
     src/matrix-long-double.cpp
     src/matrix-complex-long-double.cpp
     src/matrix-bool.cpp
-    src/matrix-int.cpp
-    src/matrix-long.cpp
+    src/matrix-char.cpp
+    src/matrix-int8.cpp
+    src/matrix-uint8.cpp
+    src/matrix-int16.cpp
+    src/matrix-uint16.cpp
+    src/matrix-int32.cpp
+    src/matrix-uint32.cpp
+    src/matrix-windows-long.cpp
+    src/matrix-windows-ulong.cpp
+    src/matrix-mac-long.cpp
+    src/matrix-mac-ulong.cpp
+    src/matrix-int64.cpp
+    src/matrix-uint64.cpp
+    src/matrix-linux-long-long.cpp
+    src/matrix-linux-ulong-long.cpp
     src/angle-axis.cpp
     src/quaternion.cpp
     src/geometry-conversion.cpp
@@ -294,10 +336,11 @@ set(${PROJECT_NAME}_SOURCES
 
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_SOURCES}
                                    ${${PROJECT_NAME}_HEADERS})
+set_standard_output_directory(${PROJECT_NAME})
 target_include_directories(
   ${PROJECT_NAME} SYSTEM
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-         $<INSTALL_INTERFACE:include>)
+         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 modernize_target_link_libraries(
   ${PROJECT_NAME}
