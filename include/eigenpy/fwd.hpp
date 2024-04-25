@@ -65,6 +65,7 @@
 #define EIGENPY_DOCUMENTATION_END_IGNORE    /// \endcond
 
 #include "eigenpy/config.hpp"
+#include <boost/type_traits/is_base_of.hpp>
 
 // Silence a warning about a deprecated use of boost bind by boost python
 // at least fo boost 1.73 to 1.75
@@ -125,13 +126,13 @@ namespace bp = boost::python;
 #endif
 
 namespace eigenpy {
-template <typename MatType,
-          typename Scalar =
-              typename boost::remove_reference<MatType>::type::Scalar>
+
+// Default Scalar value can't be defined in the declaration
+// because of a CL bug.
+// See https://github.com/stack-of-tasks/eigenpy/pull/462
+template <typename MatType, typename Scalar>
 struct EigenToPy;
-template <typename MatType,
-          typename Scalar =
-              typename boost::remove_reference<MatType>::type::Scalar>
+template <typename MatType, typename Scalar>
 struct EigenFromPy;
 
 template <typename T>
