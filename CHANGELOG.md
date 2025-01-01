@@ -6,6 +6,85 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [3.10.1] - 2024-10-30
+
+### Added
+
+- Add Pixi support ([#444](https://github.com/stack-of-tasks/eigenpy/pull/444))
+
+### Fixed
+
+- Don't use C++14 feature ([#510](https://github.com/stack-of-tasks/eigenpy/pull/510))
+- Add inline to `deprecationTypeToPyObj` definition to avoid linking error ([#512](https://github.com/stack-of-tasks/eigenpy/pull/512))
+
+## [3.10.0] - 2024-09-26
+
+### Added
+
+- `GenericMapPythonVisitor`/`StdMapPythonVisitor` can now take an extra visitor argument in the `expose()` method, similar to `StdVectorPythonVisitor`
+
+### Changed
+
+- Move `GenericMapPythonVisitor` to its own header `eigenpy/map.hpp`
+- Rename `overload_base_get_item_for_std_map` to `overload_base_get_item_for_map`, move out of `eigenpy::details` namespace
+- Move `EmptyPythonVisitor` to new header `eigenpy/utils/empty-visitor.hpp`
+
+## [3.9.1] - 2024-09-19
+
+### Added
+
+- Add test returning reference of std::pair ([#503](https://github.com/stack-of-tasks/eigenpy/pull/503))
+- Add more general visitor `GenericMapPythonVisitor` for map types test `boost::unordered_map<std::string, int>` ([#504](https://github.com/stack-of-tasks/eigenpy/pull/504))
+- Support for non-[default-contructible](https://en.cppreference.com/w/cpp/named_req/DefaultConstructible) types in map types ([#504](https://github.com/stack-of-tasks/eigenpy/pull/504))
+- Add type_info helpers ([#502](https://github.com/stack-of-tasks/eigenpy/pull/502))
+- Add NumPy 2 support ([#496](https://github.com/stack-of-tasks/eigenpy/pull/496))
+
+### Changed
+
+- Move `StdMapPythonVisitor` out of `eigenpy::python` namespace, which was a mistake ([#504](https://github.com/stack-of-tasks/eigenpy/pull/504))
+
+## [3.9.0] - 2024-08-31
+
+### Changed
+- The `exposeStdVectorEigenSpecificType()` template function now takes the vector allocator as a template parameter ([#500](https://github.com/stack-of-tasks/eigenpy/pull/500))
+
+### Added
+- Add bp::dist to std::map converter ([#499](https://github.com/stack-of-tasks/eigenpy/pull/499))
+
+## [3.8.2] - 2024-08-26
+
+### Fixed
+- Fix function signature on Windows ([#494](https://github.com/stack-of-tasks/eigenpy/pull/494))
+
+## [3.8.1] - 2024-08-25
+
+### Fixed
+- Fix compatibility issue with NumPy 2.x on Windows ([#492](https://github.com/stack-of-tasks/eigenpy/pull/492))
+
+## [3.8.0] - 2024-08-14
+
+### Added
+- Add compatibility with jrl-cmakemodules workspace ([#485](https://github.com/stack-of-tasks/eigenpy/pull/485))
+- Remove support of Python 3.7 ([#490](https://github.com/stack-of-tasks/eigenpy/pull/490))
+
+### Fixed
+- Remove CMake CMP0167 warnings ([#487](https://github.com/stack-of-tasks/eigenpy/pull/487))
+- Fix compilation error on armhf ([#488](https://github.com/stack-of-tasks/eigenpy/pull/488))
+
+## [3.7.0] - 2024-06-11
+
+### Added
+- Added id() helper to retrieve unique object identifier in Python ([#477](https://github.com/stack-of-tasks/eigenpy/pull/477))
+- Expose QR solvers ([#478](https://github.com/stack-of-tasks/eigenpy/pull/478))
+
+## [3.6.0] - 2024-06-05
+
+### Added
+- Added a deprecation call policy shortcut ([#466](https://github.com/stack-of-tasks/eigenpy/pull/466))
+
+### Fixed
+- Fix register_symbolic_link_to_registered_type() for multiple successive registrations ([#471](https://github.com/stack-of-tasks/eigenpy/pull/471))
+
 ## [3.5.1] - 2024-04-25
 
 ### Fixed
@@ -630,7 +709,16 @@ One can now easily expose C++ struct containing Eigen objects in Python avoiding
 
 ## [1.0.0] - 2014-07-18
 
-[Unreleased]: https://github.com/stack-of-tasks/eigenpy/compare/v3.5.1...HEAD
+[Unreleased]: https://github.com/stack-of-tasks/eigenpy/compare/v3.10.1...HEAD
+[3.10.1]: https://github.com/stack-of-tasks/eigenpy/compare/v3.10.0...v3.10.1
+[3.10.0]: https://github.com/stack-of-tasks/eigenpy/compare/v3.9.1...v3.10.0
+[3.9.1]: https://github.com/stack-of-tasks/eigenpy/compare/v3.9.0...v3.9.1
+[3.9.0]: https://github.com/stack-of-tasks/eigenpy/compare/v3.8.2...v3.9.0
+[3.8.2]: https://github.com/stack-of-tasks/eigenpy/compare/v3.8.1...v3.8.2
+[3.8.1]: https://github.com/stack-of-tasks/eigenpy/compare/v3.8.0...v3.8.1
+[3.8.0]: https://github.com/stack-of-tasks/eigenpy/compare/v3.7.0...v3.8.0
+[3.7.0]: https://github.com/stack-of-tasks/eigenpy/compare/v3.6.0...v3.7.0
+[3.6.0]: https://github.com/stack-of-tasks/eigenpy/compare/v3.5.1...v3.6.0
 [3.5.1]: https://github.com/stack-of-tasks/eigenpy/compare/v3.5.0...v3.5.1
 [3.5.0]: https://github.com/stack-of-tasks/eigenpy/compare/v3.4.0...v3.5.0
 [3.4.0]: https://github.com/stack-of-tasks/eigenpy/compare/v3.3.0...v3.4.0

@@ -21,6 +21,7 @@
 #include "eigenpy/eigen-to-python.hpp"
 #include "eigenpy/pickle-vector.hpp"
 #include "eigenpy/registration.hpp"
+#include "eigenpy/utils/empty-visitor.hpp"
 
 namespace eigenpy {
 // Forward declaration
@@ -396,12 +397,6 @@ createExposeStdMethodToStdVector(const CoVisitor &co_visitor) {
 
 }  // namespace internal
 
-struct EmptyPythonVisitor
-    : public ::boost::python::def_visitor<EmptyPythonVisitor> {
-  template <class classT>
-  void visit(classT &) const {}
-};
-
 namespace internal {
 template <typename vector_type, bool T_picklable = false>
 struct def_pickle_std_vector {
@@ -454,6 +449,7 @@ struct StdVectorPythonVisitor {
     if (!register_symbolic_link_to_registered_type<vector_type>(
             add_std_visitor)) {
       bp::class_<vector_type> cl(class_name.c_str(), doc_string.c_str());
+      cl.def(IdVisitor<vector_type>());
 
       // Standard vector indexing definition
       boost::python::vector_indexing_suite<
@@ -484,9 +480,9 @@ struct StdVectorPythonVisitor {
  */
 void EIGENPY_DLLAPI exposeStdVector();
 
-template <typename MatType>
+template <typename MatType, typename Alloc = Eigen::aligned_allocator<MatType> >
 void exposeStdVectorEigenSpecificType(const char *name) {
-  typedef std::vector<MatType, Eigen::aligned_allocator<MatType> > VecMatType;
+  typedef std::vector<MatType, Alloc> VecMatType;
   std::string full_name = "StdVec_";
   full_name += name;
   StdVectorPythonVisitor<VecMatType>::expose(

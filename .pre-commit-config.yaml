@@ -1,8 +1,10 @@
 ci:
   autoupdate_branch: devel
+  autofix_prs: false
+  autoupdate_schedule: quarterly
 repos:
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.4.1
+  rev: v0.6.9
   hooks:
   - id: ruff
     args:
@@ -19,13 +21,14 @@ repos:
   rev: v0.23.1
   hooks:
   - id: toml-sort-fix
+    exclude: pixi.toml
 - repo: https://github.com/pre-commit/mirrors-clang-format
-  rev: v18.1.4
+  rev: v19.1.1
   hooks:
   - id: clang-format
     args:
     - '--style={BasedOnStyle: Google, SortIncludes: false, Standard: Cpp03}'
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.6.0
+  rev: v5.0.0
   hooks:
   - id: trailing-whitespace

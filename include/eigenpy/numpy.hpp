@@ -1,15 +1,20 @@
 /*
- * Copyright 2020-2022 INRIA
+ * Copyright 2020-2024 INRIA
  */
 
 #ifndef __eigenpy_numpy_hpp__
 #define __eigenpy_numpy_hpp__
 
-#include "eigenpy/fwd.hpp"
+#include "eigenpy/config.hpp"
 
 #ifndef PY_ARRAY_UNIQUE_SYMBOL
 #define PY_ARRAY_UNIQUE_SYMBOL EIGENPY_ARRAY_API
 #endif
+
+// For compatibility with Numpy 2.x
+// See
+// https://numpy.org/devdocs/reference/c-api/array.html#c.NPY_API_SYMBOL_ATTRIBUTE
+#define NPY_API_SYMBOL_ATTRIBUTE EIGENPY_DLLAPI
 
 #include <numpy/numpyconfig.h>
 #ifdef NPY_1_8_API_VERSION
@@ -50,12 +55,14 @@ static inline void _Py_SET_TYPE(PyObject* o, PyTypeObject* type) {
 #define EIGENPY_GET_PY_ARRAY_TYPE(array) PyArray_MinScalarType(array)->type_num
 #endif
 
+#include <complex>
+
 namespace eigenpy {
 void EIGENPY_DLLAPI import_numpy();
 int EIGENPY_DLLAPI PyArray_TypeNum(PyTypeObject* type);
 
 // By default, the Scalar is considered as a Python object
-template <typename Scalar>
+template <typename Scalar, typename Enable = void>
 struct NumpyEquivalentType {
   enum { type_code = NPY_USERDEF };
 };
@@ -139,12 +146,20 @@ struct NumpyEquivalentType<unsigned long> {
 // See https://github.com/stack-of-tasks/eigenpy/pull/455
 #if defined __linux__
 
-template <>
-struct NumpyEquivalentType<long long> {
+#include <type_traits>
+
+template <typename Scalar>
+struct NumpyEquivalentType<
+    Scalar,
+    typename std::enable_if<!std::is_same<int64_t, long long>::value &&
+                            std::is_same<Scalar, long long>::value>::type> {
   enum { type_code = NPY_LONGLONG };
 };
-template <>
-struct NumpyEquivalentType<unsigned long long> {
+template <typename Scalar>
+struct NumpyEquivalentType<
+    Scalar, typename std::enable_if<
+                !std::is_same<uint64_t, unsigned long long>::value &&
+                std::is_same<Scalar, unsigned long long>::value>::type> {
   enum { type_code = NPY_ULONGLONG };
 };
 
@@ -208,7 +223,7 @@ EIGENPY_DLLAPI PyArray_Descr* call_PyArray_DescrFromType(int typenum);
 
 EIGENPY_DLLAPI void call_PyArray_InitArrFuncs(PyArray_ArrFuncs* funcs);
 
-EIGENPY_DLLAPI int call_PyArray_RegisterDataType(PyArray_Descr* dtype);
+EIGENPY_DLLAPI int call_PyArray_RegisterDataType(PyArray_DescrProto* dtype);
 
 EIGENPY_DLLAPI int call_PyArray_RegisterCanCast(PyArray_Descr* descr,
                                                 int totype,

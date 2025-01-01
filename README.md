@@ -14,17 +14,18 @@ EigenPy — Versatile and efficient Python bindings between Numpy and Eigen
 **EigenPy** is an open-source framework that allows the binding of the famous [Eigen](http://eigen.tuxfamily.org) C++ library in Python via Boost.Python.
 
 **EigenPy** provides:
- - full memory sharing between Numpy and Eigen, avoiding memory allocation
- - full support Eigen::Ref avoiding memory allocation
- - full support of the Eigen::Tensor module
- - exposition of the Geometry module of Eigen for easy code prototyping
- - standard matrix decomposion routines of Eigen such as the Cholesky decomposition, SVD decomposition, QR decomposition, etc.
- - full support of SWIG objects
- - full support of runtime declaration of Numpy scalar types
- - extended API to expose std::vector types
- - full support of vectorization between C++ and Python (all the hold objects are properly aligned in memory)
 
-## Setup
+- full memory sharing between Numpy and Eigen, avoiding memory allocation
+- full support Eigen::Ref avoiding memory allocation
+- full support of the Eigen::Tensor module
+- exposition of the Geometry module of Eigen for easy code prototyping
+- standard matrix decomposion routines of Eigen such as the Cholesky decomposition (SVD and QR decompositions [can be added](#contributing))
+- full support of SWIG objects
+- full support of runtime declaration of Numpy scalar types
+- extended API to expose several STL types and some of their Boost equivalents: `optional` types, `std::pair`, maps, variants...
+- full support of vectorization between C++ and Python (all the hold objects are properly aligned in memory)
+
+## Installation
 
 The installation of **EigenPy** on your computer is made easy for Linux/BSD, Mac OS X, and Windows environments.
 
@@ -73,6 +74,27 @@ and then install **EigenPy** for Python 3.x with:
 ```
 brew install eigenpy
 ```
+
+## Contributing
+
+Standard matrix decomposion routines of Eigen such as the SVD and QR decompositions can be readily added to **EigenPy** following the example of the Cholesky decomposition that is already implemented. Feel free to open a PR if you wrap them for your use case.
+
+## Build/install from source with Pixi
+
+To build **EigenPy** from source the easiest way is to use [Pixi](https://pixi.sh/latest/#installation).
+
+[Pixi](https://pixi.sh/latest/) is a cross-platform package management tool for developers that
+will install all required dependencies in `.pixi` directory.
+It's used by our CI agent so you have the guarantee to get the right dependencies.
+
+Run the following command to install dependencies, configure, build and test the project:
+
+```bash
+pixi run test
+```
+
+The project will be built in the `build` directory.
+You can run `pixi shell` and build the project with `cmake` and `ninja` manually.
 
 ## Credits
 
