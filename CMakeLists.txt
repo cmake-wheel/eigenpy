@@ -359,6 +359,12 @@ set(${PROJECT_NAME}_SOURCES
 
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_SOURCES}
                                    ${${PROJECT_NAME}_HEADERS})
+
+if(UNIX)
+  get_relative_rpath(${CMAKE_INSTALL_LIBDIR} ${PROJECT_NAME}_INSTALL_RPATH)
+  set_target_properties(${PROJECT_NAME} PROPERTIES INSTALL_RPATH
+      "${${PROJECT_NAME}_INSTALL_RPATH}")
+endif()
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 set_standard_output_directory(${PROJECT_NAME})
 target_include_directories(
