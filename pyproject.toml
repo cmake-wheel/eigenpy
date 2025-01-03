@@ -16,7 +16,7 @@ homepage = "https://github.com/cmake-wheel/eigenpy"
 upstream = "https://github.com/stack-of-tasks/eigenpy"
 
 [tool.cmeel]
-build-number = 0
+build-number = 1
 run-tests = false
 
 [tool.ruff]
